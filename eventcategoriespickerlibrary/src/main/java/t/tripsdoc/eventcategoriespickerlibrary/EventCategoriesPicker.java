@@ -26,55 +26,22 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+import t.tripsdoc.eventcategoriespickerlibrary.language.en;
+import t.tripsdoc.eventcategoriespickerlibrary.language.in;
+import t.tripsdoc.eventcategoriespickerlibrary.language.th;
 import t.tripsdoc.eventcategoriespickerlibrary.listener.BottomSheetInteractionListener;
 import t.tripsdoc.eventcategoriespickerlibrary.listener.OnEventCategoryPickerListener;
 import t.tripsdoc.eventcategoriespickerlibrary.listener.OnItemClickListener;
 
 public class EventCategoriesPicker implements BottomSheetInteractionListener {
 
-    private final EventCategories[] CATEGORIES = {
-            new EventCategories("1", "Art"),
-            new EventCategories("2", "Comedy"),
-            new EventCategories("3", "Crafts"),
-            new EventCategories("4", "Cultural"),
-            new EventCategories("5", "Celebration"),
-            new EventCategories("6", "Dance"),
-            new EventCategories("7", "Drinks"),
-            new EventCategories("8", "Education"),
-            new EventCategories("9", "Exhibition"),
-            new EventCategories("10", "Film"),
-
-            new EventCategories("11", "Food"),
-            new EventCategories("12", "Games"),
-            new EventCategories("13", "Gardening"),
-            new EventCategories("14", "Gathering"),
-            new EventCategories("15", "Health"),
-            new EventCategories("16", "Literature"),
-            new EventCategories("17", "Music"),
-            new EventCategories("18", "Memorial"),
-            new EventCategories("19", "Meeting"),
-            new EventCategories("20", "Networking"),
-
-            new EventCategories("21", "Party"),
-            new EventCategories("22", "Parade"),
-            new EventCategories("23", "Religion"),
-            new EventCategories("24", "Seminar"),
-            new EventCategories("25", "Shopping"),
-            new EventCategories("26", "Sports"),
-            new EventCategories("27", "Talk Show"),
-            new EventCategories("28", "Theater"),
-            new EventCategories("29", "Technology"),
-            new EventCategories("30", "Wellness"),
-
-            new EventCategories("31", "Workshop"),
-            new EventCategories("32", "Other"),
-    };
-
     public static final int SORT_BY_NONE = 0;
     public static final int SORT_BY_NAME = 1;
     public static final int SORT_BY_ID = 2;
+    public static final String LOCALE_DEFAULT = "en";
 
     private Context context;
+    private String locale = LOCALE_DEFAULT;
     private int sortBy = SORT_BY_NONE;
     private OnEventCategoryPickerListener onEventCategoryPickerListener;
     private boolean canSearch = true;
@@ -93,12 +60,26 @@ public class EventCategoriesPicker implements BottomSheetInteractionListener {
 
     EventCategoriesPicker(Builder builder){
         sortBy = builder.sortBy;
+        locale = builder.locale;
         if(builder.onEventCategoryPickerListener != null){
             onEventCategoryPickerListener = builder.onEventCategoryPickerListener;
         }
         context = builder.context;
         canSearch = builder.canSearch;
-        eventCategories = new ArrayList<>(Arrays.asList(CATEGORIES));
+        switch (locale) {
+            case "en":
+                eventCategories = new ArrayList<>(Arrays.asList(en.CATEGORIES));
+                break;
+            case "in":
+                eventCategories = new ArrayList<>(Arrays.asList(in.CATEGORIES));
+                break;
+            case "th":
+                eventCategories = new ArrayList<>(Arrays.asList(th.CATEGORIES));
+                break;
+            default:
+                eventCategories = new ArrayList<>(Arrays.asList(en.CATEGORIES));
+                break;
+        }
         sortEventCategories(eventCategories);
     }
 
@@ -146,6 +127,7 @@ public class EventCategoriesPicker implements BottomSheetInteractionListener {
     @Override
     public void setupRecyclerView(View sheetView) {
         searchResults = new ArrayList<>();
+        sortEventCategories(eventCategories);
         searchResults.addAll(eventCategories);
         adapter = new EventCategoriesPickerAdapter(sheetView.getContext(), searchResults,
                 new OnItemClickListener() {
@@ -250,6 +232,7 @@ public class EventCategoriesPicker implements BottomSheetInteractionListener {
 
     public static class Builder {
         private Context context;
+        private String locale;
         private int sortBy = SORT_BY_NONE;
         private boolean canSearch = true;
         private OnEventCategoryPickerListener onEventCategoryPickerListener;
@@ -267,6 +250,11 @@ public class EventCategoriesPicker implements BottomSheetInteractionListener {
 
         public Builder sortBy(@NonNull int sortBy) {
             this.sortBy = sortBy;
+            return this;
+        }
+
+        public Builder locale(@NonNull String locale) {
+            this.locale = locale;
             return this;
         }
 
